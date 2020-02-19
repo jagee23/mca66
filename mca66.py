@@ -5,15 +5,10 @@ import binascii
 import time, logging
 import json
 
-
 class mca66:
-
 
 	def __init__(self, to=1):
 		logging.debug("Init...")
-		#lines = filter(None, (line.strip() for line in open("/config/zones_list.txt")))
-		#self.zone_names = {int(a): b for a,b in [line.split(':') for line in lines]}
-		#self.input_names = list(filter(None, (line.strip() for line in open("/config/sources_list.txt"))))
 		self.to = 1
 		self.zonelist = {k+1:{'power':None,'input':None,'vol':None,'mute':None,'input_name':None} for k in range(6)}
 	def __enter__(self):
@@ -24,18 +19,8 @@ class mca66:
 	def __exit__(self ,type, value, traceback):
 		logging.debug("Exit...")
 		
-	#def test(self, command, zone, value):
-		#print(command)
-		#print(zone)
-		#print(value)
-		#logging.debug(command)
-		#logging.debug(zone)
-		#logging.debug(value)
-		#return "off"
-		
 	def getZoneNames(self):
 		return self.zone_names
-
 
 	def checksum(self, message):
 		cs = 0
@@ -62,17 +47,8 @@ class mca66:
 		print("Zone: ", zone)
 		print("Power: ", self.zonelist[zone]['power'])
 		print("Input: ", self.zonelist[zone]['input'])
-		#print("Input Name: ", self.zonelist[zone]['input_name'])
 		print("Volume: ",self.zonelist[zone]['vol'])
 		print("Mute: ", self.zonelist[zone]['mute'])
-		#logging.debug("Zone: %s", zone)
-		#logging.debug("Power: %s", self.zonelist[zone]['power'])
-		#logging.debug("Input: %s", self.zonelist[zone]['input'])
-		#logging.debug("Input Name: %s", self.zonelist[zone]['input_name'])
-		#logging.debug("Volume: %s",self.zonelist[zone]['vol'])
-		#logging.debug("Mute: %s", self.zonelist[zone]['mute'])
-
-
 
 	def parse_reply(self, message):
 		#print("ParseReply_MessagePassedIn: ", message)
@@ -80,22 +56,11 @@ class mca66:
 			Zone_List = list()
 			zone0 = message[0:14]
 			zone1 = message[14:28]
-			#zone2 = message[28:42]
-			#zone3 = message[42:56]
-			#zone4 = message[56:70]
-			#zone5 = message[70:84]
-			#zone6 = message[84:98]
 			Zone_List.append(zone1)
-			#Zone_List.append(zone2)
-			#Zone_List.append(zone3)
-			#Zone_List.append(zone4)
-			#Zone_List.append(zone5)
-			#Zone_List.append(zone6)
 			for i in Zone_List:
 				zone = i[2]
 				self.zonelist[zone]['power'] = "on" if (i[4] & 1<<7)>>7 else "off"
 				self.zonelist[zone]['input'] = i[8]+1
-				#self.zonelist[zone]['input_name'] = self.input_names[i[8]]
 				self.zonelist[zone]['vol'] = i[9]-196 if i[9] else 0
 				self.zonelist[zone]['mute'] = "on" if (i[4] & 1<<6)>>6 else "off"
 				self.printzonejson(zone)
@@ -103,7 +68,6 @@ class mca66:
 				zone = message[2]
 				self.zonelist[zone]['power'] = "on" if (message[4] & 1<<7)>>7 else "off"
 				self.zonelist[zone]['input'] = message[8]+1
-				#self.zonelist[zone]['input_name'] = self.input_names[message[8]]
 				self.zonelist[zone]['vol'] = message[9]-196 if message[9] else 0
 				self.zonelist[zone]['mute'] = "on" if (message[4] & 1<<6)>>6 else "off"
 				#self.printzone(zone)
@@ -114,22 +78,11 @@ class mca66:
 			Zone_List = list()
 			zone0 = message[0:14]
 			zone1 = message[14:28]
-			#zone2 = message[28:42]
-			#zone3 = message[42:56]
-			#zone4 = message[56:70]
-			#zone5 = message[70:84]
-			#zone6 = message[84:98]
 			Zone_List.append(zone1)
-			#Zone_List.append(zone2)
-			#Zone_List.append(zone3)
-			#Zone_List.append(zone4)
-			#Zone_List.append(zone5)
-			#Zone_List.append(zone6)
 			for i in Zone_List:
 				zone = i[2]
 				self.zonelist[zone]['power'] = "on" if (i[4] & 1<<7)>>7 else "off"
 				self.zonelist[zone]['input'] = i[8]+1
-				#self.zonelist[zone]['input_name'] = self.input_names[i[8]]
 				self.zonelist[zone]['vol'] = i[9]-196 if i[9] else 0
 				self.zonelist[zone]['mute'] = "on" if (i[4] & 1<<6)>>6 else "off"
 				#self.printzone(zone)
@@ -138,11 +91,9 @@ class mca66:
 				zone = message[2]
 				self.zonelist[zone]['power'] = "on" if (message[4] & 1<<7)>>7 else "off"
 				self.zonelist[zone]['input'] = message[8]+1
-				#self.zonelist[zone]['input_name'] = self.input_names[message[8]]
 				self.zonelist[zone]['vol'] = message[9]-196 if message[9] else 0
 				self.zonelist[zone]['mute'] = "on" if (message[4] & 1<<6)>>6 else "off"
 				#self.printzone(zone)
-				
 
 		print(self.zonelist[zoneNumber]['power'])
 
@@ -173,9 +124,7 @@ class mca66:
 		self.send_command(cmd)
 
 	def setVol(self, zone, vol):
-		#print("_________________________")
 		#print(zone,vol)
-		#print(self.zonelist)
 		self.queryZone(zone)
 		if vol not in range(0,63):
 			logging.warning("Invald Volume")
@@ -228,7 +177,6 @@ class mca66:
 			cmd = bytearray([0x02,0x00,zone,0x04,0x38 if pwr else 0x39])
 		else:
 			cmd = bytearray([0x02,0x00,zone,0x04,0x20 if pwr else 0x21])
-		
 		self.send_command(cmd)
 
 	def send_command(self, cmd):
