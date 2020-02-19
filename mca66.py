@@ -5,14 +5,15 @@ import binascii
 import time, logging
 import json
 
+
 class mca66:
 
 
 	def __init__(self, to=1):
 		logging.debug("Init...")
-		lines = filter(None, (line.strip() for line in open("/config/zones_list.txt")))
-		self.zone_names = {int(a): b for a,b in [line.split(':') for line in lines]}
-		self.input_names = list(filter(None, (line.strip() for line in open("/config/sources_list.txt"))))
+		#lines = filter(None, (line.strip() for line in open("/config/zones_list.txt")))
+		#self.zone_names = {int(a): b for a,b in [line.split(':') for line in lines]}
+		#self.input_names = list(filter(None, (line.strip() for line in open("/config/sources_list.txt"))))
 		self.to = 1
 		self.zonelist = {k+1:{'power':None,'input':None,'vol':None,'mute':None,'input_name':None} for k in range(6)}
 	def __enter__(self):
@@ -54,7 +55,6 @@ class mca66:
 			{'Zone': Zone,
 			'Power': Power,
 			'Input': Input,
-			'InputName': InputName,
 			'Volume': Volume,
 			'Mute': Mute}, indent=4, separators=(',', ': ')))
 		
@@ -62,7 +62,7 @@ class mca66:
 		print("Zone: ", zone)
 		print("Power: ", self.zonelist[zone]['power'])
 		print("Input: ", self.zonelist[zone]['input'])
-		print("Input Name: ", self.zonelist[zone]['input_name'])
+		#print("Input Name: ", self.zonelist[zone]['input_name'])
 		print("Volume: ",self.zonelist[zone]['vol'])
 		print("Mute: ", self.zonelist[zone]['mute'])
 		#logging.debug("Zone: %s", zone)
@@ -95,7 +95,7 @@ class mca66:
 				zone = i[2]
 				self.zonelist[zone]['power'] = "on" if (i[4] & 1<<7)>>7 else "off"
 				self.zonelist[zone]['input'] = i[8]+1
-				self.zonelist[zone]['input_name'] = self.input_names[i[8]]
+				#self.zonelist[zone]['input_name'] = self.input_names[i[8]]
 				self.zonelist[zone]['vol'] = i[9]-196 if i[9] else 0
 				self.zonelist[zone]['mute'] = "on" if (i[4] & 1<<6)>>6 else "off"
 				self.printzonejson(zone)
@@ -103,7 +103,7 @@ class mca66:
 				zone = message[2]
 				self.zonelist[zone]['power'] = "on" if (message[4] & 1<<7)>>7 else "off"
 				self.zonelist[zone]['input'] = message[8]+1
-				self.zonelist[zone]['input_name'] = self.input_names[message[8]]
+				#self.zonelist[zone]['input_name'] = self.input_names[message[8]]
 				self.zonelist[zone]['vol'] = message[9]-196 if message[9] else 0
 				self.zonelist[zone]['mute'] = "on" if (message[4] & 1<<6)>>6 else "off"
 				#self.printzone(zone)
@@ -129,7 +129,7 @@ class mca66:
 				zone = i[2]
 				self.zonelist[zone]['power'] = "on" if (i[4] & 1<<7)>>7 else "off"
 				self.zonelist[zone]['input'] = i[8]+1
-				self.zonelist[zone]['input_name'] = self.input_names[i[8]]
+				#self.zonelist[zone]['input_name'] = self.input_names[i[8]]
 				self.zonelist[zone]['vol'] = i[9]-196 if i[9] else 0
 				self.zonelist[zone]['mute'] = "on" if (i[4] & 1<<6)>>6 else "off"
 				#self.printzone(zone)
@@ -138,7 +138,7 @@ class mca66:
 				zone = message[2]
 				self.zonelist[zone]['power'] = "on" if (message[4] & 1<<7)>>7 else "off"
 				self.zonelist[zone]['input'] = message[8]+1
-				self.zonelist[zone]['input_name'] = self.input_names[message[8]]
+				#self.zonelist[zone]['input_name'] = self.input_names[message[8]]
 				self.zonelist[zone]['vol'] = message[9]-196 if message[9] else 0
 				self.zonelist[zone]['mute'] = "on" if (message[4] & 1<<6)>>6 else "off"
 				#self.printzone(zone)
@@ -146,14 +146,16 @@ class mca66:
 
 		print(self.zonelist[zoneNumber]['power'])
 
-	def setInput(self, zone, input):
+	def setInput(self, zone, src):
 		if zone not in range(1,7):
 			logging.warning("Invalid Zone")
 			return    
-		if input not in range(1,7):
+		if src not in range(1,7):
 			logging.warning("invalid input number")
-			return   
-		cmd = bytearray([0x02,0x00,zone,0x04,input+2])
+			return
+		inputsource = src + 2
+		inputmsg = [0x02,0x00,zone,0x04,inputsource]
+		cmd = bytearray(inputmsg)
 		self.send_command(cmd)
 
 	def volUp(self, zone):
