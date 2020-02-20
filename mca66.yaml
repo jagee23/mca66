@@ -1,0 +1,338 @@
+####Zone Power Switches - Change Friendly Names to your environment####
+switch:
+  platform: command_line
+  scan_interval: 45
+  switches:
+    htd_pwr_zone1: 
+      command_on: "python3 /config/packages/mca66/htd.py pwr 1 1"
+      command_off: "python3 /config/packages/mca66/htd.py pwr 1 0"
+      friendly_name: "Kitchen Speakers"
+      value_template: "{{ value == 'on' }}"
+      command_state: "python3 /config/packages/mca66/htd.py querypwr 1 0"
+    htd_pwr_zone2: 
+      command_on: "python3 /config/packages/mca66/htd.py pwr 2 1"
+      command_off: "python3 /config/packages/mca66/htd.py pwr 2 0" 
+      friendly_name: "Bathroom Speakers"
+      value_template: "{{ value == 'on' }}"
+      command_state: "python3 /config/packages/mca66/htd.py querypwr 2 0"
+    htd_pwr_zone3:
+      command_on: "python3 /config/packages/mca66/htd.py pwr 3 1"
+      command_off: "python3 /config/packages/mca66/htd.py pwr 3 0"
+      friendly_name: "Dining Room Speakers"
+      value_template: "{{ value == 'on' }}"
+      command_state: "python3 /config/packages/mca66/htd.py querypwr 3 0"
+    htd_pwr_zone4:
+      command_on: "python3 /config/packages/mca66/htd.py pwr 4 1"
+      command_off: "python3 /config/packages/mca66/htd.py pwr 4 0"
+      friendly_name: "Master Bath Speakers"
+      value_template: "{{ value == 'on' }}"
+      command_state: "python3 /config/packages/mca66/htd.py querypwr 4 0"
+    htd_pwr_zone5:
+      command_on: "python3 /config/packages/mca66/htd.py pwr 5 1"
+      command_off: "python3 /config/packages/mca66/htd.py pwr 5 0"
+      friendly_name: "Patio Speakers"
+      value_template: "{{ value == 'on' }}"
+      command_state: "python3 /config/packages/mca66/htd.py querypwr 5 0"
+    htd_pwr_zone6:
+      command_on: "python3 /config/packages/mca66/htd.py pwr 6 1"
+      command_off: "python3 /config/packages/mca66/htd.py pwr 6 0"
+      friendly_name: "Zone6 Speakers"
+      value_template: "{{ value == 'on' }}"
+      command_state: "python3 /config/packages/mca66/htd.py querypwr 6 0"
+
+
+####Zone Volume Control - change name to your environment####
+input_number:
+  htd_vol_zone1:
+    name: Kitchen Volume
+    icon: mdi:volume-high
+    min: 0
+    max: 62
+    step: 1
+  htd_vol_zone2:
+    name: Bathroom Volume
+    icon: mdi:volume-high
+    min: 0
+    max: 62
+    step: 1
+  htd_vol_zone3:
+    name: Dining Room Volume
+    icon: mdi:volume-high
+    min: 0
+    max: 62
+    step: 1
+  htd_vol_zone4:
+    name: Master Bath Volume
+    icon: mdi:volume-high
+    min: 0
+    max: 62
+    step: 1
+  htd_vol_zone5:
+    name: Patio Volume
+    icon: mdi:volume-high
+    min: 0
+    max: 62
+    step: 1
+  htd_vol_zone6:
+    name: Zone 6 Volume
+    icon: mdi:volume-high
+    min: 0
+    max: 62
+    step: 1
+
+####Zone Mute Control####
+
+
+
+####Zone Source Select - Change Options to your environment####
+####Leave Source number on end of each option for the automation to work correctly####
+input_select:
+  htd_source_zone1:
+    name: Zone 1 Source
+    options:
+      - "Stereo - 1"
+      - "Kitchen TV - 2"
+      - "Source - 3"
+      - "Source - 4"
+      - "Source - 5"
+      - "Source - 6"
+  htd_source_zone2:
+    name: Zone 2 Source
+    options:
+      - "Stereo - 1"
+      - "Kitchen TV - 2"
+      - "Source - 3"
+      - "Source - 4"
+      - "Source - 5"
+      - "Source - 6"
+  htd_source_zone3:
+    name: Zone 3 Source
+    options:
+      - "Stereo - 1"
+      - "Kitchen TV - 2"
+      - "Source - 3"
+      - "Source - 4"
+      - "Source - 5"
+      - "Source - 6"
+  htd_source_zone4:
+    name: Zone 4 Source
+    options:
+      - "Stereo - 1"
+      - "Kitchen TV - 2"
+      - "Source - 3"
+      - "Source - 4"
+      - "Source - 5"
+      - "Source - 6"
+  htd_source_zone5:
+    name: Zone 5 Source
+    options:
+      - "Stereo - 1"
+      - "Kitchen TV - 2"
+      - "Source - 3"
+      - "Source - 4"
+      - "Source - 5"
+      - "Source - 6"
+  htd_source_zone6:
+    name: Zone 6 Source
+    options:
+      - "Stereo - 1"
+      - "Kitchen TV - 2"
+      - "Source - 3"
+      - "Source - 4"
+      - "Source - 5"
+      - "Source - 6"
+
+####Zone Sensors - Dont change these names####
+sensor:
+  - platform: command_line
+    name: htd sensor zone1
+    scan_interval: 30
+    json_attributes:
+      - Zone
+      - Input
+      - Volume
+      - Mute
+    command: "python3 /config/packages/mca66/htd.py getzone 1"
+    value_template: '{{value_json.Power}}'
+
+  - platform: command_line
+    name: htd sensor zone2
+    scan_interval: 25
+    json_attributes:
+      - Zone
+      - Input
+      - Volume
+      - Mute
+    command: "python3 /config/packages/mca66/htd.py getzone 2"
+    value_template: '{{value_json.Power}}'
+
+  - platform: command_line
+    name: htd sensor zone3
+    scan_interval: 35
+    json_attributes:
+      - Zone
+      - Input
+      - Volume
+      - Mute
+    command: "python3 /config/packages/mca66/htd.py getzone 3"
+    value_template: '{{value_json.Power}}'
+  
+  - platform: command_line
+    name: htd sensor zone4
+    scan_interval: 40
+    json_attributes:
+      - Zone
+      - Input
+      - Volume
+      - Mute
+    command: "python3 /config/packages/mca66/htd.py getzone 4"
+    value_template: '{{value_json.Power}}'
+  
+  - platform: command_line
+    name: htd sensor zone5
+    scan_interval: 43
+    json_attributes:
+      - Zone
+      - Input
+      - Volume
+      - Mute
+    command: "python3 /config/packages/mca66/htd.py getzone 5"
+    value_template: '{{value_json.Power}}'
+
+  - platform: command_line
+    name: htd sensor zone6
+    scan_interval: 33
+    json_attributes:
+      - Zone
+      - Input
+      - Volume
+      - Mute
+    command: "python3 /config/packages/mca66/htd.py getzone 6"
+    value_template: '{{value_json.Power}}'
+
+
+
+
+
+####Shell Command to send commands to HTD####
+shell_command:
+  home_audio_control: "python3 /config/packages/mca66/htd.py {{command}} {{zone}} {{value}}"
+
+####Zone Groups####
+group:
+  home_audio_all:
+    name: All Zones
+    entities:
+      - switch.htd_pwr_zone1
+      - switch.htd_pwr_zone2
+      - switch.htd_pwr_zone3
+      - switch.htd_pwr_zone4
+      - switch.htd_pwr_zone5
+      - switch.htd_pwr_zone6
+
+  home_audio_indoor:
+    name: Indoor Zones
+    entities:
+      - switch.htd_pwr_zone1
+      - switch.htd_pwr_zone2
+      - switch.htd_pwr_zone3
+      - switch.htd_pwr_zone4
+            
+
+
+#####Automations####
+automation:
+####Sends selected volume to HTD Gateway####
+  - alias: HTD Zone Volume - Slider Moved
+    trigger:
+      - platform: state
+        entity_id:
+          - input_number.htd_vol_zone1
+          - input_number.htd_vol_zone2
+          - input_number.htd_vol_zone3
+          - input_number.htd_vol_zone4
+          - input_number.htd_vol_zone5
+          - input_number.htd_vol_zone6
+    condition:
+      condition: template
+      value_template: '{{ states("switch.htd_pwr_zone"+trigger.entity_id[-1])=="on" }}'
+    action:
+      - service: shell_command.home_audio_control
+        data_template:
+          command: "setvol"
+          zone: "{{ trigger.entity_id[-1] }}"
+          value: "{{ states(trigger.entity_id)|int }}"
+
+####This sets the correct volume in HA if changed somewhere else######
+  - alias: HTD Zone Volume - Set Slider
+    trigger:
+      - platform: state
+        entity_id: 
+          - sensor.htd_sensor_zone1
+          - sensor.htd_sensor_zone2
+          - sensor.htd_sensor_zone3
+          - sensor.htd_sensor_zone4
+          - sensor.htd_sensor_zone5
+          - sensor.htd_sensor_zone6
+    condition:
+      condition: template
+      value_template: >
+        {{ trigger.from_state and
+          trigger.to_state.attributes.Volume !=
+          trigger.from_state.attributes.Volume }} and {{is_state(trigger.entity_id, 'on')}}"
+    action:
+      - service: input_number.set_value
+        data_template:
+          entity_id: "input_number.htd_vol_zone{{trigger.entity_id[-1]}}"
+          value: "{{ trigger.to_state.attributes.Volume }}"
+
+####Sends selected source to HTD Gateway####
+  - alias: HTD Source Selected
+    trigger:
+      - platform: state
+        entity_id:
+          - input_select.htd_source_zone1
+          - input_select.htd_source_zone2
+          - input_select.htd_source_zone3
+          - input_select.htd_source_zone4
+          - input_select.htd_source_zone5
+          - input_select.htd_source_zone6
+    condition:
+      condition: template
+      value_template: '{{ states("switch.htd_pwr_zone"+trigger.entity_id[-1])=="on" }}'
+    action:
+      - service: shell_command.home_audio_control
+        data_template:
+          command: "setinput"
+          zone: "{{ trigger.entity_id[-1] }}"
+          value: "{{ trigger.to_state.state[-1] }}"
+
+####This sets the correct source in HA if changed somewhere else######
+  - alias: HTD Source - Set Option
+    trigger:
+      - platform: state
+        entity_id: 
+          - sensor.htd_sensor_zone1
+          - sensor.htd_sensor_zone2
+          - sensor.htd_sensor_zone3
+          - sensor.htd_sensor_zone4
+          - sensor.htd_sensor_zone5
+          - sensor.htd_sensor_zone6
+    action:
+      - service: input_select.select_option
+        data_template:
+          entity_id: "input_select.htd_source_zone{{trigger.entity_id[-1]}}"
+          option: >
+            {% if is_state_attr(trigger.entity_id, 'Input', 1) %}
+              Stereo - 1
+            {% elif is_state_attr(trigger.entity_id, 'Input', 2) %}
+              Kitchen TV - 2
+            {% elif is_state_attr(trigger.entity_id, 'Input', 3) %}
+              Source - 3
+            {% elif is_state_attr(trigger.entity_id, 'Input', 4) %}
+              Source - 4
+            {% elif is_state_attr(trigger.entity_id, 'Input', 5) %}
+              Source - 5
+            {% elif is_state_attr(trigger.entity_id, 'Input', 6) %}
+              Source - 6
+            {% endif %}
