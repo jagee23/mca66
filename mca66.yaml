@@ -81,7 +81,19 @@ input_number:
     step: 1
 
 ####Zone Mute Control####
-
+input_boolean:
+  htd_mute_zone1:
+    icon: mdi:volume-mute
+  htd_mute_zone2:
+    icon: mdi:volume-mute
+  htd_mute_zone3:
+    icon: mdi:volume-mute
+  htd_mute_zone4:
+    icon: mdi:volume-mute
+  htd_mute_zone5:
+    icon: mdi:volume-mute
+  htd_mute_zone6:
+    icon: mdi:volume-mute
 
 
 ####Zone Source Select - Change Options to your environment####
@@ -263,6 +275,7 @@ automation:
           zone: "{{ trigger.entity_id[-1] }}"
           value: "{{ states(trigger.entity_id)|int }}"
 
+
 ####This sets the correct volume in HA if changed somewhere else######
   - alias: HTD Zone Volume - Set Slider
     trigger:
@@ -279,7 +292,7 @@ automation:
       value_template: >
         {{ trigger.from_state and
           trigger.to_state.attributes.Volume !=
-          trigger.from_state.attributes.Volume }} and {{is_state(trigger.entity_id, 'on')}}"
+          trigger.from_state.attributes.Volume }} and {{is_state(trigger.entity_id, 'on')}}
     action:
       - service: input_number.set_value
         data_template:
@@ -308,7 +321,8 @@ automation:
           value: "{{ trigger.to_state.state[-1] }}"
 
 ####This sets the correct source in HA if changed somewhere else######
-  - alias: HTD Source - Set Option
+####Change the source values to match your input select options exactly.####
+  - alias: HTD Source - Set Option for input_select
     trigger:
       - platform: state
         entity_id: 
@@ -318,6 +332,10 @@ automation:
           - sensor.htd_sensor_zone4
           - sensor.htd_sensor_zone5
           - sensor.htd_sensor_zone6
+    condition:
+      condition: template
+      value_template: >
+        "{{ trigger.to_state.attributes.Input != trigger.from_state.attributes.Input }}"
     action:
       - service: input_select.select_option
         data_template:
@@ -336,3 +354,45 @@ automation:
             {% elif is_state_attr(trigger.entity_id, 'Input', 6) %}
               Source - 6
             {% endif %}
+
+####Sends mute zone toggle to HTD Gateway####
+  - alias: HTD Mute Toggle
+    trigger:
+      - platform: state
+        entity_id:
+          - input_boolean.htd_mute_zone1
+          - input_boolean.htd_mute_zone2
+          - input_boolean.htd_mute_zone3
+          - input_boolean.htd_mute_zone4
+          - input_boolean.htd_mute_zone5
+          - input_boolean.htd_mute_zone6
+    condition:
+      condition: template
+      value_template: '{{ states("switch.htd_pwr_zone"+trigger.entity_id[-1])=="on" }}'
+    action:
+      - service: shell_command.home_audio_control
+        data_template:
+          command: "mute"
+          zone: "{{ trigger.entity_id[-1] }}"
+          value: "0"
+          
+  - alias: HTD Mute - Set in HA
+    trigger:
+      - platform: state
+        entity_id: 
+          - sensor.htd_sensor_zone1
+          - sensor.htd_sensor_zone2
+          - sensor.htd_sensor_zone3
+          - sensor.htd_sensor_zone4
+          - sensor.htd_sensor_zone5
+          - sensor.htd_sensor_zone6
+    condition:
+      condition: template
+      value_template: >
+        "{{ trigger.to_state.attributes.Mute != trigger.from_state.attributes.Mute }} and {{ trigger.to_state.attributes.Mute != states("input_boolean.htd_mute_zone"+trigger.entity_id[-1]) }}"
+    action:
+      - service: input_boolean.toggle
+        data_template:
+          entity_id: "input_boolean.htd_mute_zone{{trigger.entity_id[-1]}}"
+          
+            
