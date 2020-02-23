@@ -21,3 +21,5 @@ Instructions for HA integration:
 
 7. Add items to lovelace to your liking!
 
+
+Credit to @S10XtremeNLow - http://www.brandonclaps.com for a large portion of the code.  
