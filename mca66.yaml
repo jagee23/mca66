@@ -394,5 +394,3 @@ automation:
       - service: input_boolean.toggle
         data_template:
           entity_id: "input_boolean.htd_mute_zone{{trigger.entity_id[-1]}}"
-          
-            
