@@ -50,6 +50,13 @@ class mca66:
 		print("Volume: ",self.zonelist[zone]['vol'])
 		print("Mute: ", self.zonelist[zone]['mute'])
 
+	def printerror(self, zone):
+		Zone = zone	
+		print (json.dumps(
+			{'error': zone
+			}, indent=4, separators=(',', ': ')))
+
+
 	def parse_reply(self, message):
 		#print("ParseReply_MessagePassedIn: ", message)
 		if len(message) > 14 and len(message) <=28:
@@ -64,14 +71,21 @@ class mca66:
 				self.zonelist[zone]['vol'] = i[9]-196 if i[9] else 0
 				self.zonelist[zone]['mute'] = "on" if (i[4] & 1<<6)>>6 else "off"
 				self.printzonejson(zone)
-			if len(message) == 14:
-				zone = message[2]
-				self.zonelist[zone]['power'] = "on" if (message[4] & 1<<7)>>7 else "off"
-				self.zonelist[zone]['input'] = message[8]+1
-				self.zonelist[zone]['vol'] = message[9]-196 if message[9] else 0
-				self.zonelist[zone]['mute'] = "on" if (message[4] & 1<<6)>>6 else "off"
-				#self.printzone(zone)
-	
+		if len(message) == 14:
+			zone = message[2]
+			self.zonelist[zone]['power'] = "on" if (message[4] & 1<<7)>>7 else "off"
+			self.zonelist[zone]['input'] = message[8]+1
+			self.zonelist[zone]['vol'] = message[9]-196 if message[9] else 0
+			self.zonelist[zone]['mute'] = "on" if (message[4] & 1<<6)>>6 else "off"
+			#self.printzone(zone)
+		if len(message) <=13:
+			zone = 1
+			self.printerror(zone)
+		if len(message) >=29:
+			zone = 1
+			self.printerror(zone)
+
+
 	def parse_reply_returndetail(self, message, zoneNumber):
 		#print("ParseReply_MessagePassedIn: ", message)
 		if len(message) > 14 and len(message) <=28:
@@ -94,15 +108,16 @@ class mca66:
 				self.zonelist[zone]['vol'] = message[9]-196 if message[9] else 0
 				self.zonelist[zone]['mute'] = "on" if (message[4] & 1<<6)>>6 else "off"
 				#self.printzone(zone)
-
+			
 		print(self.zonelist[zoneNumber]['power'])
+		
 
 	def setInput(self, zone, src):
 		if zone not in range(1,7):
-			logging.warning("Invalid Zone")
+			#logging.warning("Invalid Zone")
 			return    
 		if src not in range(1,7):
-			logging.warning("invalid input number")
+			#logging.warning("invalid input number")
 			return
 		inputsource = src + 2
 		inputmsg = [0x02,0x00,zone,0x04,inputsource]
@@ -147,31 +162,35 @@ class mca66:
 		
 	def toggleMute(self, zone):
 		if zone not in range(1,7):
-			logging.warning("Invalid Zone")
+			#logging.warning("Invalid Zone")
 			return    
 		cmd = bytearray([0x02,0x00,zone,0x04,0x22])
 		self.send_command(cmd)
 
 	def queryZone(self, zone):
+		if zone==0:
+			return
 		if zone not in range(1,7):
-			logging.warning("Invalid Zone")
+			#logging.warning("Invalid Zone")
 			return
 		cmd = bytearray([0x02,0x00,zone,0x06,0x00])
 		self.send_command(cmd)
 	
 	def queryZone_returndetail(self, zone):
+		if zone==0:
+			return
 		if zone not in range(1,7):
-			logging.warning("Invalid Zone")
+			#logging.warning("Invalid Zone")
 			return
 		cmd = bytearray([0x02,0x00,zone,0x06,0x00])
 		self.send_command_returndetail(cmd, zone)
 
 	def setPower(self, zone, pwr):
 		if zone not in range(0,7):
-			logging.warning("Invalid Zone")
+			#logging.warning("Invalid Zone")
 			return
 		if pwr not in [0,1]:
-			logging.warning("invalid power command")
+			#logging.warning("invalid power command")
 			return
 		if zone==0:
 			cmd = bytearray([0x02,0x00,zone,0x04,0x38 if pwr else 0x39])
