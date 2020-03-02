@@ -52,7 +52,7 @@ class mca66:
 
 	def parse_reply(self, message):
 		#print("ParseReply_MessagePassedIn: ", message)
-		if len(message) > 14:
+		if len(message) > 14 and len(message) <=28:
 			Zone_List = list()
 			zone0 = message[0:14]
 			zone1 = message[14:28]
@@ -74,7 +74,7 @@ class mca66:
 	
 	def parse_reply_returndetail(self, message, zoneNumber):
 		#print("ParseReply_MessagePassedIn: ", message)
-		if len(message) > 14:
+		if len(message) > 14 and len(message) <=28:
 			Zone_List = list()
 			zone0 = message[0:14]
 			zone1 = message[14:28]
